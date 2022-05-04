@@ -11,9 +11,10 @@ logging.basicConfig(
 
 # пример эмодзи, другие можно скачать в интернете
 
-emoji = ['🛁', '🚴', '🚀', '🚁', '🚂', '🚃', '🚌', '🚎', '🚑', '🚒', '🚓', '🦆', '🚕', '🦚', '🦞', '🚗',
+emoji = ['⏳', '🚴', '🚀', '🚁', '🚂', '🚃', '🚌', '🚎', '🚑', '🚒', '🚓', '🦆', '🚕', '🦚', '🦞', '🚗',
          '🦑', '🚚', '🦢', '🦟', '🦠', '🦅', '🦀', '🦗', '🦋', '🚜', '🦇', '🦔', '🦓', '🚣', '🦒', '🦎',
-         '🚶', '🛌', '🛒', '🛩', '🛰', '🛸', '🤔', '🤐', '🤓', '🤡', '🤫', '🥐', '🥕', '🥝', '🥦', '🥾', '🔮']
+         '🚶', '🛌', '🛒', '🛩', '🛰', '🛸', '🤔', '🤐', '🤓', '🤡', '🤫', '🥐', '🥕', '🥝', '✨', '🃏', '🔮',
+         '👋']
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +25,12 @@ reply_keyboard = [['/prediction', '/horoscope'],
                   ['/advice', '/future'],
                   ['/help']]
 markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
+reply_keyboard = [['/start']]
+markup1 = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
 
 def start(update, context):
+    update.message.reply_text('👋')
     update.message.reply_text(
         "Добро пожаловать! Я бот-гадалка, ведьма в седьмом поколении. Вот, что я умею:"
     )
@@ -48,14 +52,22 @@ def help(update, context):
         "/horoscope - составлю гороскоп специально для Вас" '\n'
         "/prediction - сделаю Вам предсказание" '\n'
         "/advice - попрошу совета у шара судьбы" '\n'
-        "/future - сделаю расклад на будущее" '\n',
-        reply_markup = markup
+        "/future - сделаю расклад на будущее" '\n'
+        "/exit - конец работы" '\n',
+        reply_markup=markup
     )
 
 
 def stop(update, context):
-    update.message.reply_text("Всего доброго!")
     return ConversationHandler.END
+
+
+def exit(update, context):
+    update.message.reply_text('👋')
+    update.message.reply_text(
+        "Всего хорошего, приходите ещё!",
+        reply_markup=markup1
+    )
 
 
 f = open('predictions_day.txt', 'r', encoding='UTF-8')
@@ -75,10 +87,11 @@ def prediction(update, context):
         update.message.reply_text(
             "Хорошо! Дайте-ка подумать...",
         )
-        time.sleep(2)
         update.message.reply_text(
-            '😱',
+            '⏳',
         )
+        time.sleep(2)
+
         answer = random.choice(predictions_day)
 
         update.message.reply_text(answer)
@@ -98,7 +111,10 @@ def horoscope1(update, context):
 def horoscope(update, context):
     zodiac = update.message.text
     logger.info(zodiac)
-
+    update.message.reply_text(
+        '⏳',
+    )
+    time.sleep(2)
     if zodiac == 'овен' or zodiac == 'Овен':
         update.message.reply_text(
             "Какой замечательный знак! Вам предстоит сделать много полезного. Не исключено, "
@@ -147,7 +163,8 @@ def horoscope(update, context):
             "Все Девы такие хорошие! Стоит поторопиться: можно сделать много полезного. Важно не откладывать на потом "
             "решение сложных задач. "
             "Напротив, лучше начать день именно с них: так вы и справитесь быстрее, и результат получите превосходный."
-            "Если возникнут трудности, близкие охотно помогут, но вы постараетесь не злоупотреблять их добротой.", reply_markup=markup
+            "Если возникнут трудности, близкие охотно помогут, но вы постараетесь не злоупотреблять их добротой.",
+            reply_markup=markup
         )
     elif zodiac == 'Весы' or zodiac == 'весы':
         update.message.reply_text(
@@ -210,7 +227,7 @@ def advice(update, context):
         "Хорошо! Загадайте что-нибудь, только мне не говорите.",
     )
     update.message.reply_text(
-        '🔮',
+        '🔮⏳',
     )
     time.sleep(2)
     answer = random.choice(advicetxt)
@@ -220,6 +237,9 @@ def advice(update, context):
 def future(update, context):
     update.message.reply_text(
         "Хорошо! Так, карты говорят...",
+    )
+    update.message.reply_text(
+        '🃏✨',
     )
     update.message.reply_text(
         '🤔',
@@ -250,6 +270,7 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("stop", stop))
+    dp.add_handler(CommandHandler("exit", exit))
     updater.start_polling()
     updater.idle()
 
